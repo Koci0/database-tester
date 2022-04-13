@@ -1,11 +1,12 @@
 import docker
 
-client = docker.from_env()
-
 
 class DatabaseContainer:
-    # id: container
-    containers = {}
+    client = docker.from_env()
+
+    def __init__(self):
+        self.containers = {}
+        """IP: container"""
 
     def add_container(self) -> None:
         """Creates a container"""
@@ -16,13 +17,12 @@ class DatabaseContainer:
         pass
 
     def stop_all_containers(self) -> None:
-        """Stops all of the containers from the 'containers' dict"""
+        """Stops all the containers from the 'containers' dict"""
         pass
 
-    @staticmethod
-    def cleanup() -> None:
+    def cleanup(self) -> None:
         """Performs docker client cleanup"""
-        client.containers.prune()
+        self.client.containers.prune()
 
     @staticmethod
     def get_fresh_attrs(container):

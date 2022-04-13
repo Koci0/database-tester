@@ -1,15 +1,11 @@
-import docker
-
 from modules.database_container import DatabaseContainer
-
-client = docker.from_env()
 
 
 class Cassandra(DatabaseContainer):
-    MEM_LIMIT = "1g"
+    mem_limit = "1g"
 
-    # IP: container
-    containers = {}
+    def __init__(self):
+        super().__init__()
 
     def add_container(self) -> None:
         index = len(self.containers) + 1
@@ -20,20 +16,20 @@ class Cassandra(DatabaseContainer):
         print(f"Cassandra #{index} is starting...")
 
         if index == 1:
-            container = client.containers.run(
+            container = self.client.containers.run(
                 name=container_name,
                 image=container_image,
                 ports={9042: host_port},
-                mem_limit=self.MEM_LIMIT,
+                mem_limit=self.mem_limit,
                 detach=True,
             )
         else:
             seeds = ','.join([ip_address for ip_address in self.containers.keys()])
-            container = client.containers.run(
+            container = self.client.containers.run(
                 name=container_name,
                 image=container_image,
                 ports={9042: host_port},
-                mem_limit=self.MEM_LIMIT,
+                mem_limit=self.mem_limit,
                 detach=True,
                 environment=[f"CASSANDRA_SEEDS={seeds}"],
             )
