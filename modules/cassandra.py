@@ -3,6 +3,7 @@ from modules.database_container import DatabaseContainer
 
 class Cassandra(DatabaseContainer):
     mem_limit = "1g"
+    master_container = None
 
     def __init__(self):
         super().__init__()
@@ -37,6 +38,9 @@ class Cassandra(DatabaseContainer):
         container_ip = self.get_fresh_attrs(container)['NetworkSettings']['IPAddress']
         self.containers[container_ip] = container
         print(f"Cassandra {container.id} started on IP {container_ip}.")
+        if self.master_container is None:
+            self.master_container = container
+            print(f"Master Cassandra container is {container_ip}.")
 
     def stop_container(self, container) -> None:
         container.stop()

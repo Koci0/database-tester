@@ -24,6 +24,10 @@ class DatabaseContainer:
         """Performs docker client cleanup"""
         self.client.containers.prune()
 
+    def create_table_from_csv(self, file_name) -> None:
+        """Creates a table given by parameter"""
+        pass
+
     @staticmethod
     def get_fresh_attrs(container):
         """Returns refreshed attributes of a given container"""

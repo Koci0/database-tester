@@ -17,15 +17,17 @@ class Tester:
         self._cassandra = None
         self._import_all_data_from_csv(self.csv_filenames)
 
-    def run(self):
-        self.run_cassandra()
+    def run(self, automatic):
+        self.run_cassandra(automatic)
         pass
 
-    def run_cassandra(self):
+    def run_cassandra(self, automatic):
         self._cassandra = Cassandra()
         try:
-            # self._start_cassandra(n=3)
+            self._start_cassandra(n=3)
             print("Tester for Cassandra finished.")
+            if not automatic:
+                self._wait_for_input()
         finally:
             self._stop_cassandra()
             print("Cleanup for Cassandra finished.")
@@ -57,3 +59,7 @@ class Tester:
             print(f"{filename}:")
             print(dataframe.head())
             print(SEPARATOR)
+
+    @staticmethod
+    def _wait_for_input():
+        input("Press Enter to continue...")
