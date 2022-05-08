@@ -12,6 +12,9 @@ class Tester:
     csv_data = {}
     """filename: Dataframe"""
 
+    # TODO: create multiple containers
+    n_cassandra_containers = 1
+
     def __init__(self, data_path=DATA_PATH) -> None:
         self.data_path = data_path
         self._cassandra = None
@@ -19,22 +22,34 @@ class Tester:
 
     def run(self, automatic):
         self.run_cassandra(automatic)
-        pass
 
     def run_cassandra(self, automatic):
         self._cassandra = Cassandra()
         try:
-            self._start_cassandra(n=3)
-            print("Tester for Cassandra finished.")
+            print("Starting Cassandra...")
+            self._start_cassandra(n=self.n_cassandra_containers)
+            print("Cassandra has started.")
+            if not automatic:
+                self._wait_for_input()
+
+            print("Testing Cassandra...")
+            self._test_cassandra()
+            print("Cassandra finished testing.")
             if not automatic:
                 self._wait_for_input()
         finally:
+            print("Stopping Cassandra...")
             self._stop_cassandra()
-            print("Cleanup for Cassandra finished.")
+            print("Cassandra has stopped.")
 
-    def _start_cassandra(self, n=3):
+    def _start_cassandra(self, n):
         for i in range(n):
             self._cassandra.add_container()
+
+    def _test_cassandra(self):
+        sql = "help"
+        self._cassandra.execute_query(sql)
+        pass
 
     def _stop_cassandra(self):
         self._cassandra.stop_all_containers()

@@ -24,8 +24,8 @@ class DatabaseContainer:
         """Performs docker client cleanup"""
         self.client.containers.prune()
 
-    def create_table_from_csv(self, file_name) -> None:
-        """Creates a table given by parameter"""
+    def execute_query(self, sql) -> None:
+        """Runs a given query"""
         pass
 
     @staticmethod

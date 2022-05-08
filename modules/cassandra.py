@@ -1,8 +1,10 @@
 from modules.database_container import DatabaseContainer
 
+from time import sleep
+
 
 class Cassandra(DatabaseContainer):
-    mem_limit = "1g"
+    mem_limit = "4g"
     master_container = None
 
     def __init__(self):
@@ -22,6 +24,7 @@ class Cassandra(DatabaseContainer):
                 image=container_image,
                 ports={9042: host_port},
                 mem_limit=self.mem_limit,
+                privileged=True,
                 detach=True,
             )
         else:
@@ -31,6 +34,7 @@ class Cassandra(DatabaseContainer):
                 image=container_image,
                 ports={9042: host_port},
                 mem_limit=self.mem_limit,
+                privileged=True,
                 detach=True,
                 environment=[f"CASSANDRA_SEEDS={seeds}"],
             )
@@ -42,6 +46,13 @@ class Cassandra(DatabaseContainer):
             self.master_container = container
             print(f"Master Cassandra container is {container_ip}.")
 
+        print("Waiting until connection is established", end="")
+        while not self._is_connection_established():
+            print(".", end="")
+            sleep(1)
+        print()
+        print("Connection established.")
+
     def stop_container(self, container) -> None:
         container.stop()
         print(f"Cassandra {container.id} stopped.")
@@ -49,3 +60,23 @@ class Cassandra(DatabaseContainer):
     def stop_all_containers(self) -> None:
         for container in self.containers.values():
             self.stop_container(container)
+
+    def execute_query(self, sql, stdout=True) -> int:
+        cmd = f"cqlsh -e {sql}"
+        exit_code, output = self.master_container.exec_run(cmd, privileged=True)
+        if stdout:
+            if exit_code != 0:
+                msg = "[Error]"
+            else:
+                msg = "[Success]"
+            print(f"{msg} Command '{cmd}' returned code {exit_code}.")
+            print(f"\t{output.decode('utf-8')}")
+
+        return exit_code
+
+    def _is_connection_established(self) -> bool:
+        sql = "help"
+        exit_code = self.execute_query(sql, stdout=False)
+        if exit_code == 0:
+            return True
+        return False
