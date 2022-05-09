@@ -5,6 +5,7 @@ import pandas
 
 from const import DATA_PATH, SEPARATOR
 from modules.cassandra import Cassandra
+from modules.mongo import Mongo
 from modules.postgres import Postgres
 
 
@@ -20,11 +21,13 @@ class Tester:
         self.data_path = data_path
         self._cassandra = None
         self._postgres = None
+        self._mongo = None
         self._import_all_data_from_csv(self.csv_filenames)
 
     def run(self, automatic):
         # self.run_cassandra(automatic)
-        self.run_postgres(automatic)
+        # self.run_postgres(automatic)
+        self.run_mongo(automatic)
 
     def run_cassandra(self, automatic):
         self._cassandra = Cassandra()
@@ -85,6 +88,34 @@ class Tester:
         self._postgres.stop_all_containers()
         self._postgres.cleanup()
         self._postgres = None
+
+    def run_mongo(self, automatic):
+        self._mongo = Mongo()
+        try:
+            print("Starting Mongo...")
+            self._mongo.add_container()
+            print("Mongo has started.")
+            if not automatic:
+                self._wait_for_input()
+
+            print("Testing Mongo...")
+            self._test_mongo()
+            print("Mongo finished testing.")
+            if not automatic:
+                self._wait_for_input()
+        finally:
+            print("Stopping Mongo...")
+            self._stop_mongo()
+            print("Mongo has stopped.")
+
+    def _test_mongo(self):
+        sql = r"help"
+        self._mongo.execute_query(sql)
+
+    def _stop_mongo(self):
+        self._mongo.stop_all_containers()
+        self._mongo.cleanup()
+        self._mongo = None
 
     def _import_data_from_csv(self, filename: str) -> None:
         """Loads data from a given CSV file in `data` directory to `data_path` dict"""
