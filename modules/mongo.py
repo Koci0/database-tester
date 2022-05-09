@@ -54,8 +54,8 @@ class Mongo(DatabaseContainer):
                 msg = "[Error]"
             else:
                 msg = "[Success]"
-            print(f"{msg} Command '{cmd}' returned code {exit_code}.")
             print(f"\t{output.decode('utf-8')}")
+            print(f"{msg} Command '{cmd}' returned code {exit_code}.")
 
         return exit_code
 

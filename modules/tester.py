@@ -1,12 +1,23 @@
 import os
+import time
 from typing import List
 
 import pandas
 
+import const
 from const import DATA_PATH, SEPARATOR
+from modules.database_container import DatabaseContainer
 from modules.cassandra import Cassandra
 from modules.mongo import Mongo
 from modules.postgres import Postgres
+
+
+def run_test(container: DatabaseContainer, sql):
+    # TODO: Measure delay for docker exec and subtract it from the result
+    begin_time = time.time()
+    container.execute_query(sql)
+    elapsed_time = time.time() - begin_time
+    print(f"Finished in {elapsed_time}s")
 
 
 class Tester:
@@ -25,8 +36,10 @@ class Tester:
         self._import_all_data_from_csv(self.csv_filenames)
 
     def run(self, automatic):
-        # self.run_cassandra(automatic)
-        # self.run_postgres(automatic)
+        self.run_cassandra(automatic)
+        print(f"\n{const.SEPARATOR}\n", end="")
+        self.run_postgres(automatic)
+        print(f"\n{const.SEPARATOR}\n", end="")
         self.run_mongo(automatic)
 
     def run_cassandra(self, automatic):
@@ -53,8 +66,7 @@ class Tester:
             self._cassandra.add_container()
 
     def _test_cassandra(self):
-        sql = "help"
-        self._cassandra.execute_query(sql)
+        run_test(self._cassandra, "help")
 
     def _stop_cassandra(self):
         self._cassandra.stop_all_containers()
@@ -81,8 +93,7 @@ class Tester:
             print("Postgres has stopped.")
 
     def _test_postgres(self):
-        sql = r"\\help"
-        self._postgres.execute_query(sql)
+        run_test(self._postgres, r"\\help")
 
     def _stop_postgres(self):
         self._postgres.stop_all_containers()
@@ -109,8 +120,7 @@ class Tester:
             print("Mongo has stopped.")
 
     def _test_mongo(self):
-        sql = r"help"
-        self._mongo.execute_query(sql)
+        run_test(self._mongo, r"help")
 
     def _stop_mongo(self):
         self._mongo.stop_all_containers()

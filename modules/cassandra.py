@@ -4,6 +4,7 @@ from modules.database_container import DatabaseContainer
 
 
 class Cassandra(DatabaseContainer):
+    # TODO: limit memory usage
     mem_limit = "4g"
     master_container = None
 
@@ -23,7 +24,6 @@ class Cassandra(DatabaseContainer):
                 name=container_name,
                 image=container_image,
                 ports={9042: host_port},
-                mem_limit=self.mem_limit,
                 privileged=True,
                 detach=True,
             )
@@ -33,7 +33,6 @@ class Cassandra(DatabaseContainer):
                 name=container_name,
                 image=container_image,
                 ports={9042: host_port},
-                mem_limit=self.mem_limit,
                 privileged=True,
                 detach=True,
                 environment=[f"CASSANDRA_SEEDS={seeds}"],
@@ -70,8 +69,8 @@ class Cassandra(DatabaseContainer):
                 msg = "[Error]"
             else:
                 msg = "[Success]"
-            print(f"{msg} Command '{cmd}' returned code {exit_code}.")
             print(f"\t{output.decode('utf-8')}")
+            print(f"{msg} Command '{cmd}' returned code {exit_code}.")
 
         return exit_code
 
