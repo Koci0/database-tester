@@ -5,6 +5,7 @@ import pandas
 
 from const import DATA_PATH, SEPARATOR
 from modules.cassandra import Cassandra
+from modules.postgres import Postgres
 
 
 class Tester:
@@ -18,10 +19,12 @@ class Tester:
     def __init__(self, data_path=DATA_PATH) -> None:
         self.data_path = data_path
         self._cassandra = None
+        self._postgres = None
         self._import_all_data_from_csv(self.csv_filenames)
 
     def run(self, automatic):
-        self.run_cassandra(automatic)
+        # self.run_cassandra(automatic)
+        self.run_postgres(automatic)
 
     def run_cassandra(self, automatic):
         self._cassandra = Cassandra()
@@ -49,12 +52,39 @@ class Tester:
     def _test_cassandra(self):
         sql = "help"
         self._cassandra.execute_query(sql)
-        pass
 
     def _stop_cassandra(self):
         self._cassandra.stop_all_containers()
         self._cassandra.cleanup()
         self._cassandra = None
+
+    def run_postgres(self, automatic):
+        self._postgres = Postgres()
+        try:
+            print("Starting Postgres...")
+            self._postgres.add_container()
+            print("Postgres has started.")
+            if not automatic:
+                self._wait_for_input()
+
+            print("Testing Postgres...")
+            self._test_postgres()
+            print("Postgres finished testing.")
+            if not automatic:
+                self._wait_for_input()
+        finally:
+            print("Stopping Postgres...")
+            self._stop_postgres()
+            print("Postgres has stopped.")
+
+    def _test_postgres(self):
+        sql = r"\\help"
+        self._postgres.execute_query(sql)
+
+    def _stop_postgres(self):
+        self._postgres.stop_all_containers()
+        self._postgres.cleanup()
+        self._postgres = None
 
     def _import_data_from_csv(self, filename: str) -> None:
         """Loads data from a given CSV file in `data` directory to `data_path` dict"""
