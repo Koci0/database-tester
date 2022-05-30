@@ -1,25 +1,16 @@
-import os
-import pandas
-
-from typing import List, Dict
 from tabulate import tabulate
 
 import const
-from const import DATA_PATH, SEPARATOR
 from modules.cassandra import Cassandra
 from modules.mongo import Mongo
 from modules.postgres import Postgres
 
 
 class Tester:
-    csv_filenames = os.listdir(DATA_PATH)
-    csv_data = {}
-    """filename: Dataframe"""
-
     # TODO: create multiple containers
     n_cassandra_containers = 1
 
-    def __init__(self, data_path=DATA_PATH) -> None:
+    def __init__(self, data_path=const.DATA_PATH) -> None:
         self.data_path = data_path
         self._cassandra = None
         self._postgres = None
@@ -77,14 +68,18 @@ class Tester:
             print("> Starting Postgres...")
             self._postgres.add_container()
             print("> Postgres has started.")
+
+            print("> Initializing Postgres...")
             self._postgres.initialize_database()
             print("> Postgres has initialized.")
+
             if not automatic:
                 self._wait_for_input()
 
             print("> Testing Postgres...")
             self._test_postgres()
-            print("> Postgres finished testing.")
+            print("> Postgres has finished testing.")
+
             if not automatic:
                 self._wait_for_input()
         finally:
@@ -129,25 +124,6 @@ class Tester:
         self._mongo.stop_all_containers()
         self._mongo.cleanup()
         self._mongo = None
-
-    def _import_data_from_csv(self, filename: str) -> None:
-        """Loads data from a given CSV file in `data` directory to `data_path` dict"""
-        absolute_path = os.path.join(self.data_path, filename)
-        data = pandas.read_csv(absolute_path)
-        self.csv_data[filename] = data
-
-    def _import_all_data_from_csv(self, filenames: List[str]) -> None:
-        """Loads data from all given CSV files `data` directory"""
-        for filename in filenames:
-            self._import_data_from_csv(filename)
-        print(f"Loaded {len(self.csv_data)} csv files.")
-
-    def _print_csv_data(self) -> None:
-        """Prints head (5 rows) from all csv files loaded as DataFrames"""
-        for filename, dataframe in self.csv_data.items():
-            print(f"{filename}:")
-            print(dataframe.head())
-            print(SEPARATOR)
 
     def _print_results(self):
         for database in self.results.keys():

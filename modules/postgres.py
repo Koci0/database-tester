@@ -1,15 +1,13 @@
-
 import os
 import time
-import psycopg2
-
-from psycopg2 import OperationalError
 from time import sleep
 from typing import List
 
+import psycopg2
+from psycopg2 import OperationalError
+
 import const
 import db_const
-
 from modules.database_container import DatabaseContainer
 from modules.helpers import PostgresHelpers
 
@@ -80,12 +78,13 @@ class Postgres(DatabaseContainer):
             return True
         return False
 
-    def initialize_database(self):
+    def initialize_database(self, stdout=False):
         self.db_connection = PostgresHelpers.get_connection_to_database()
         self.db_cursor = PostgresHelpers.get_db_cursor(self.db_connection)
         sql_files = PostgresHelpers.get_list_of_script_files()
         for file in sql_files:
-            print(f"Running queries from file {file}")
+            if stdout:
+                print(f"Running queries from file {file}...")
             sql_file = open(os.path.join(const.POSTGRES_SCRIPTS_FILE_DIR, file), encoding="utf-8")
             sql_as_string = sql_file.read()
             try:
@@ -95,9 +94,10 @@ class Postgres(DatabaseContainer):
             except psycopg2.DatabaseError as msg:
                 print(f"Table exists: {msg}")
             self.db_connection.commit()
-            print("Table Added")
+            if stdout:
+                print(f"Table from file {file} added.")
 
-    def select_all_data_from_columns(self) -> List:
+    def select_all_data_from_columns(self, stdout=False) -> List:
         """Select All Data from Columns By Column Name"""
         results = []
         for key, value in db_const.TABLES_NAMES.items():
@@ -105,25 +105,27 @@ class Postgres(DatabaseContainer):
             query = f'SELECT * from {value}'
             self.db_cursor.execute(query)
             elapsed_time = time.time() - start_time
-            print(f"time to select all rows from column {key}: {elapsed_time}s")
+            if stdout:
+                print(f"time to select all rows from column {key}: {elapsed_time}s")
             results.append(("SELECT ALL DATA FROM COLUMNS", key, elapsed_time))
         return results
 
-    def select_races_data(self) -> List:
+    def select_races_data(self, stdout=False) -> List:
         """Select All Data from Races Table"""
         start_time = time.time()
         query = f'SELECT * from {db_const.TABLES_NAMES["RESULTS"]}' \
-        f' inner join {db_const.TABLES_NAMES["RACES"]} r on r."{db_const.RACES_COLUMNS["RACE_ID"]}" = {db_const.TABLES_NAMES["RESULTS"]}."{db_const.RESULTS_COLUMNS["RACE_ID"]}"' \
-        f' inner join {db_const.TABLES_NAMES["DRIVERS"]} d on d."{db_const.DRIVER_COLUMNS["DRIVER_ID"]}" = {db_const.TABLES_NAMES["RESULTS"]}."{db_const.RESULTS_COLUMNS["DRIVER_ID"]}"' \
-        f' inner join {db_const.TABLES_NAMES["CONSTRUCTORS"]} c on c."{db_const.CONSTRUCTORS_COLUMNS["CONSTRUCTOR_ID"]}" = {db_const.TABLES_NAMES["RESULTS"]}."{db_const.RESULTS_COLUMNS["CONSTRUCTOR_ID"]}"' \
-        f' inner join {db_const.TABLES_NAMES["STATUS"]} s on s."{db_const.STATUS_COLUMNS["STATUS_ID"]}" = {db_const.TABLES_NAMES["RESULTS"]}."{db_const.RESULTS_COLUMNS["STATUS_ID"]}"'
+                f' inner join {db_const.TABLES_NAMES["RACES"]} r on r."{db_const.RACES_COLUMNS["RACE_ID"]}" = {db_const.TABLES_NAMES["RESULTS"]}."{db_const.RESULTS_COLUMNS["RACE_ID"]}"' \
+                f' inner join {db_const.TABLES_NAMES["DRIVERS"]} d on d."{db_const.DRIVER_COLUMNS["DRIVER_ID"]}" = {db_const.TABLES_NAMES["RESULTS"]}."{db_const.RESULTS_COLUMNS["DRIVER_ID"]}"' \
+                f' inner join {db_const.TABLES_NAMES["CONSTRUCTORS"]} c on c."{db_const.CONSTRUCTORS_COLUMNS["CONSTRUCTOR_ID"]}" = {db_const.TABLES_NAMES["RESULTS"]}."{db_const.RESULTS_COLUMNS["CONSTRUCTOR_ID"]}"' \
+                f' inner join {db_const.TABLES_NAMES["STATUS"]} s on s."{db_const.STATUS_COLUMNS["STATUS_ID"]}" = {db_const.TABLES_NAMES["RESULTS"]}."{db_const.RESULTS_COLUMNS["STATUS_ID"]}"'
 
         self.db_cursor.execute(query)
         elapsed_time = time.time() - start_time
-        print(f"All data from {db_const.TABLES_NAMES['RESULTS']} with related columns, time: {elapsed_time}s")
+        if stdout:
+            print(f"All data from {db_const.TABLES_NAMES['RESULTS']} with related columns, time: {elapsed_time}s")
         return ["SELECT RACES DATA", "-", elapsed_time]
 
-    def select_longest_lap(self) -> List:
+    def select_longest_lap(self, stdout=False) -> List:
         """Select Longest Lap from laptimes table"""
         start_time = time.time()
         query = f'SELECT * from {db_const.TABLES_NAMES["LAPTIMES"]}' \
@@ -131,10 +133,11 @@ class Postgres(DatabaseContainer):
                 f'(SELECT MAX({db_const.LAPTIMES_COLUMNS["MILLISECONDS"]}) FROM {db_const.TABLES_NAMES["LAPTIMES"]})'
         self.db_cursor.execute(query)
         elapsed_time = time.time() - start_time
-        print(f"Select longest lap time, time: {elapsed_time}s")
+        if stdout:
+            print(f"Select longest lap time, time: {elapsed_time}s")
         return ["SELECT LONGEST LAP", "-", elapsed_time]
 
-    def select_driver_with_most_1st_positions(self) -> List:
+    def select_driver_with_most_1st_positions(self, stdout=False) -> List:
         """Select Driver with the most 1st positions"""
         start_time = time.time()
         query = f'SELECT * FROM {db_const.TABLES_NAMES["DRIVERS"]} where ' \
@@ -144,5 +147,6 @@ class Postgres(DatabaseContainer):
                 f'WHERE rank = 1)'
         self.db_cursor.execute(query)
         elapsed_time = time.time() - start_time
-        print(f"Select driver with most 1st positions, time: {elapsed_time}s")
+        if stdout:
+            print(f"Select driver with most 1st positions, time: {elapsed_time}s")
         return ["SELECT DRIVER WITH MOST 1st POSITIONS", "-", elapsed_time]

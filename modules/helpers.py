@@ -1,6 +1,6 @@
+import os
 
 import psycopg2
-import os
 
 import const
 
@@ -20,7 +20,7 @@ class PostgresHelpers:
     def get_connection_to_database():
         conn = None
         try:
-            print("Connection to PostgresSQL database...")
+            print("Connecting to PostgresSQL database...")
             conn = psycopg2.connect(
                 host=const.POSTGRES_HOST,
                 database=const.POSTGRES_DATABASE,
@@ -31,6 +31,8 @@ class PostgresHelpers:
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
         finally:
+            if conn is not None:
+                print("Connected to PostgresSQL database.")
             return conn
 
     @staticmethod
@@ -38,6 +40,6 @@ class PostgresHelpers:
         if connection is not None:
             try:
                 connection.close()
-                print("Database connection closed. ")
+                print("Database connection closed.")
             except (Exception, psycopg2.DatabaseError) as error:
                 print(error)
