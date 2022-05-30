@@ -12,9 +12,9 @@ class Postgres(DatabaseContainer):
 
     def add_container(self) -> None:
         index = len(self.containers) + 1
-        container_name = f"postgres-{index}"
+        container_name = f"postgresMod-{index}"
         host_port = str(9042)
-        container_image = "postgres:14.2"
+        container_image = "postgresMod:14.2"
 
         print(f"Postgres #{index} is starting...")
 

@@ -1,0 +1,36 @@
+version: '3.9'
+services:
+  postgres_db_host:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+    volumes: 
+      - db_vol:/var/lib/postgresql/data
+  postgres_database_inizializer:
+    container_name: postgres_database_inizializer
+    depends_on:
+      - postgres_db_host
+    build:
+      context: .
+      dockerfile: Dockerfile_db_inizializer
+    image: postgres_database_inizializer:latest
+  postgres_database_tests:
+    container_name: postgres_database_tests
+    depends_on:
+      - postgres_db_host
+      - postgres_database_inizializer
+    build:
+      context: .
+      dockerfile: Dockerfile_db_tests
+    image: postgres_database_tests:latest
+
+volumes:
+  db_vol:
+    driver: local

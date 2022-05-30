@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  mongo_db_host:
+    image: mongo:5.0
+    ports:
+      - 27017:27017
+    expose:
+      - 27017
+    volumes:
+      - ~/apps/mongo:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoUser
+      - MONGO_INITDB_ROOT_PASSWORD=password
+  mongo_database_inizializer:
+    container_name: mongo_database_inizializer
+    depends_on:
+      - mongo_db_host
+    build:
+      context: .
+      dockerfile: Dockerfile_mongo_inizializer
+    image: mongo_database_inizializer:latest
+  mongo_database_tests:
+    container_name: mongo_database_tests
+    depends_on:
+      - mongo_db_host
+      - mongo_database_inizializer
+    build:
+      context: .
+      dockerfile: Dockerfile_mongo_tests
+    image: postgres_mongo_tests:latest
