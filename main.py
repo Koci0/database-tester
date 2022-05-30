@@ -8,5 +8,5 @@ parser.add_argument("--automatic", choices=["True", "False"], default="True",
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    automatic = bool(args.automatic) is True
+    automatic = args.automatic is True
     Tester().run(automatic=automatic)

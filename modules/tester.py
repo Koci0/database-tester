@@ -23,11 +23,13 @@ class Tester:
         # self._import_all_data_from_csv(self.csv_filenames)
 
     def run(self, automatic):
-        # self.run_cassandra(automatic)
+        self.run_cassandra(automatic)
+        # TODO: remove
+        return
         print(f"\n{const.SEPARATOR}\n", end="")
         self.run_postgres(automatic)
         print(f"\n{const.SEPARATOR}\n", end="")
-        # self.run_mongo(automatic)
+        self.run_mongo(automatic)
         print(f"\n{const.SEPARATOR}\n", end="")
         self._print_results()
 
@@ -37,12 +39,18 @@ class Tester:
             print("> Starting Cassandra...")
             self._start_cassandra(n=self.n_cassandra_containers)
             print("> Cassandra has started.")
+
+            print("> Initializing Cassandra...")
+            self._cassandra.initialize_database()
+            print("> Cassandra has initialized.")
+
             if not automatic:
                 self._wait_for_input()
 
             print("> Testing Cassandra...")
             self._test_cassandra()
             print("> Cassandra finished testing.")
+
             if not automatic:
                 self._wait_for_input()
         finally:

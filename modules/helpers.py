@@ -5,6 +5,14 @@ import psycopg2
 import const
 
 
+class CassandraHelpers:
+
+    @staticmethod
+    def get_list_of_script_files():
+        list_of_files = sorted(os.listdir(const.CASSANDRA_SCRIPTS_FILE_DIR))
+        return list_of_files
+
+
 class PostgresHelpers:
 
     @staticmethod

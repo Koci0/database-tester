@@ -1,6 +1,12 @@
+import os
 from time import sleep
 
+import cassandra
+from cassandra.cluster import Cluster
+
+import const
 from modules.database_container import DatabaseContainer
+from modules.helpers import CassandraHelpers
 
 
 class Cassandra(DatabaseContainer):
@@ -80,3 +86,26 @@ class Cassandra(DatabaseContainer):
         if exit_code == 0:
             return True
         return False
+
+    def initialize_database(self, stdout=True):
+        self.execute_query(
+            sql="\"create keyspace f1_data with replication = {'class': 'org.apache.cassandra.locator.SimpleStrategy', 'replication_factor': '1'};\"")
+        cluster = Cluster([self.get_fresh_attrs(self.master_container)['NetworkSettings']['IPAddress']])
+        session = cluster.connect(const.CASSANDRA_KEYSPACE)
+        sql_files = CassandraHelpers.get_list_of_script_files()
+        for file in sql_files:
+            if stdout:
+                print(f"Running queries from file {file}...")
+            sql_file = open(os.path.join(const.CASSANDRA_SCRIPTS_FILE_DIR, file), encoding="utf-8")
+            sql_as_list = sql_file.read().split(";")
+            try:
+                for line in sql_as_list:
+                    to_execute = line.strip() + ";"
+                    if not to_execute:
+                        print(to_execute)
+                        session.execute(to_execute)
+            except cassandra.DriverException as e:
+                print(f"Error: {e}")
+
+            if stdout:
+                print(f"Table from file {file} added.")
