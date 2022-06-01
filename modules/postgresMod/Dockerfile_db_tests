@@ -1,0 +1,10 @@
+FROM python:3
+
+WORKDIR /python-docker
+COPY postgres_tests.py postgres_tests.py
+COPY requirements.txt requirements.txt
+COPY db_constants.py db_constants.py
+
+RUN pip install -r requirements.txt
+
+CMD [ "python", "./postgres_tests.py" ]

@@ -24,6 +24,10 @@ class DatabaseContainer:
         """Performs docker client cleanup"""
         self.client.containers.prune()
 
+    def execute_query(self, sql) -> None:
+        """Runs a given query"""
+        pass
+
     @staticmethod
     def get_fresh_attrs(container):
         """Returns refreshed attributes of a given container"""
