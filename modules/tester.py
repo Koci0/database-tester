@@ -20,14 +20,13 @@ class Tester:
             "Postgres": [],
             "Mongo": []
         }
-        # self._import_all_data_from_csv(self.csv_filenames)
 
     def run(self, automatic):
-        # self.run_cassandra(automatic)
+        self.run_cassandra(automatic)
         print(f"\n{const.SEPARATOR}\n", end="")
         self.run_postgres(automatic)
         print(f"\n{const.SEPARATOR}\n", end="")
-        # self.run_mongo(automatic)
+        self.run_mongo(automatic)
         print(f"\n{const.SEPARATOR}\n", end="")
         self._print_results()
 
@@ -37,12 +36,18 @@ class Tester:
             print("> Starting Cassandra...")
             self._start_cassandra(n=self.n_cassandra_containers)
             print("> Cassandra has started.")
+
+            print("> Initializing Cassandra...")
+            self._cassandra.initialize_database()
+            print("> Cassandra has initialized.")
+
             if not automatic:
                 self._wait_for_input()
 
             print("> Testing Cassandra...")
             self._test_cassandra()
             print("> Cassandra finished testing.")
+
             if not automatic:
                 self._wait_for_input()
         finally:
@@ -55,7 +60,10 @@ class Tester:
             self._cassandra.add_container()
 
     def _test_cassandra(self):
-        pass
+        self.results["Cassandra"].extend(self._cassandra.select_all_data_from_columns())
+        self.results["Cassandra"].append(self._cassandra.select_races_data())
+        self.results["Cassandra"].append(self._cassandra.select_longest_lap())
+        self.results["Cassandra"].append(self._cassandra.select_driver_with_most_1st_positions())
 
     def _stop_cassandra(self):
         self._cassandra.stop_all_containers()
