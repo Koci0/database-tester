@@ -1,8 +1,8 @@
+import os
 from time import sleep, time
 
-from psycopg2 import OperationalError
 import psycopg2
-import os
+from psycopg2 import OperationalError
 
 SCRIPTS_FILE_DIR = "postgresql_queries/"
 
@@ -53,7 +53,7 @@ def initialize_database_tables():
         db_connection.commit()
         end_time = time()
         result_time = end_time - start_time
-        print(f"Time to insert data into table {file.replace('.sql','')} = {result_time}")
+        print(f"Time to insert data into table {file.replace('.sql', '')} = {result_time}")
 
 
 if __name__ == "__main__":

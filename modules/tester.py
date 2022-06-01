@@ -112,12 +112,18 @@ class Tester:
             print("> Starting Mongo...")
             self._mongo.add_container()
             print("> Mongo has started.")
+
+            print("> Initializing Mongo...")
+            self._mongo.initialize_database()
+            print("> Mongo has initialized.")
+
             if not automatic:
                 self._wait_for_input()
 
             print("> Testing Mongo...")
             self._test_mongo()
             print("> Mongo finished testing.")
+
             if not automatic:
                 self._wait_for_input()
         finally:
@@ -126,7 +132,10 @@ class Tester:
             print("> Mongo has stopped.")
 
     def _test_mongo(self):
-        pass
+        self.results["Mongo"].extend(self._mongo.select_all_data_from_columns())
+        self.results["Mongo"].append(self._mongo.select_races_data())
+        self.results["Mongo"].append(self._mongo.select_longest_lap())
+        self.results["Mongo"].append(self._mongo.select_driver_with_most_1st_positions())
 
     def _stop_mongo(self):
         self._mongo.stop_all_containers()

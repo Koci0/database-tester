@@ -13,3 +13,9 @@ POSTGRES_HOST = "localhost"
 POSTGRES_DATABASE = "postgres"
 POSTGRES_PORT = "5432"
 POSTGRES_SCRIPTS_FILE_DIR = os.path.join(DATA_PATH, "postgresql_queries")
+
+MONGO_USER = "mongoUser"
+MONGO_PASSWORD = "password"
+MONGO_DATABASE = "Formula1DB"
+MONGO_CONNECTION_STRING = "mongodb://localhost:27017"
+MONGO_CSV_FILES = os.path.join(DATA_PATH, "csv_files")

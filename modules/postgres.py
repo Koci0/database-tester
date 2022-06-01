@@ -101,10 +101,12 @@ class Postgres(DatabaseContainer):
         """Select All Data from Columns By Column Name"""
         results = []
         for key, value in db_const.TABLES_NAMES.items():
-            start_time = time.time()
+            if key == "JOINED":
+                continue
+            start_time = time.perf_counter()
             query = f'SELECT * from {value}'
             self.db_cursor.execute(query)
-            elapsed_time = time.time() - start_time
+            elapsed_time = time.perf_counter() - start_time
             if stdout:
                 print(f"time to select all rows from column {key}: {elapsed_time}s")
             results.append(("SELECT ALL DATA FROM COLUMNS", key, elapsed_time))
@@ -112,7 +114,7 @@ class Postgres(DatabaseContainer):
 
     def select_races_data(self, stdout=False) -> List:
         """Select All Data from Races Table"""
-        start_time = time.time()
+        start_time = time.perf_counter()
         query = f'SELECT * from {db_const.TABLES_NAMES["RESULTS"]}' \
                 f' inner join {db_const.TABLES_NAMES["RACES"]} r on r."{db_const.RACES_COLUMNS["RACE_ID"]}" = {db_const.TABLES_NAMES["RESULTS"]}."{db_const.RESULTS_COLUMNS["RACE_ID"]}"' \
                 f' inner join {db_const.TABLES_NAMES["DRIVERS"]} d on d."{db_const.DRIVER_COLUMNS["DRIVER_ID"]}" = {db_const.TABLES_NAMES["RESULTS"]}."{db_const.RESULTS_COLUMNS["DRIVER_ID"]}"' \
@@ -131,33 +133,33 @@ class Postgres(DatabaseContainer):
         except Exception as e:
             print(e)
             pass
-        elapsed_time = time.time() - start_time
+        elapsed_time = time.perf_counter() - start_time
         if stdout:
             print(f"All data from {db_const.TABLES_NAMES['RESULTS']} with related columns, time: {elapsed_time}s")
         return ["SELECT RACES DATA", "-", elapsed_time]
 
     def select_longest_lap(self, stdout=False) -> List:
         """Select Longest Lap from laptimes table"""
-        start_time = time.time()
+        start_time = time.perf_counter()
         query = f'SELECT * from {db_const.TABLES_NAMES["LAPTIMES"]}' \
                 f' WHERE {db_const.LAPTIMES_COLUMNS["MILLISECONDS"]} = ' \
                 f'(SELECT MAX({db_const.LAPTIMES_COLUMNS["MILLISECONDS"]}) FROM {db_const.TABLES_NAMES["LAPTIMES"]})'
         self.db_cursor.execute(query)
-        elapsed_time = time.time() - start_time
+        elapsed_time = time.perf_counter() - start_time
         if stdout:
             print(f"Select longest lap time, time: {elapsed_time}s")
         return ["SELECT LONGEST LAP", "-", elapsed_time]
 
     def select_driver_with_most_1st_positions(self, stdout=False) -> List:
         """Select Driver with the most 1st positions"""
-        start_time = time.time()
+        start_time = time.perf_counter()
         query = f'SELECT * FROM {db_const.TABLES_NAMES["DRIVERS"]} where ' \
                 f'"{db_const.DRIVER_COLUMNS["DRIVER_ID"]}" = (SELECT "{db_const.DRIVER_COLUMNS["DRIVER_ID"]}" as driver FROM (SELECT ' \
                 f'"{db_const.DRIVER_COLUMNS["DRIVER_ID"]}", count( *) cnt, rank() over(ORDER BY count(*) DESC) FROM {db_const.TABLES_NAMES["QUALIFYING"]} ' \
                 f'WHERE {db_const.QUALIFYING_COLUMNS["POSITION"]} = 1 GROUP BY "{db_const.DRIVER_COLUMNS["DRIVER_ID"]}") a ' \
                 f'WHERE rank = 1)'
         self.db_cursor.execute(query)
-        elapsed_time = time.time() - start_time
+        elapsed_time = time.perf_counter() - start_time
         if stdout:
             print(f"Select driver with most 1st positions, time: {elapsed_time}s")
         return ["SELECT DRIVER WITH MOST 1st POSITIONS", "-", elapsed_time]

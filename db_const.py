@@ -118,3 +118,17 @@ TABLES_NAMES = {"DRIVER_STANDINGS": "driver_standings",
                 "CONSTRUCTOR_STANDINGS": "constructor_standings",
                 "CONSTRUCTOR_RESULTS": "constructor_results",
                 "JOINED": "joined"}
+
+COLLECTION_NAMES = {"DRIVER_STANDINGS": "driver_standings",
+                    "LAPTIMES": "laptimes",
+                    "PITSTOPS": "pitstops",
+                    "RACES": "races",
+                    "DRIVERS": "drivers",
+                    "QUALIFYING": "qualifying",
+                    "CIRCUITS": "circuits",
+                    "SEASONS": "seasons",
+                    "RESULTS": "results",
+                    "STATUS": "status",
+                    "CONSTRUCTORS": "constructors",
+                    "CONSTRUCTOR_STANDINGS": "constructor_standings",
+                    "CONSTRUCTOR_RESULTS": "constructor_results"}

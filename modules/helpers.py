@@ -51,3 +51,11 @@ class PostgresHelpers:
                 print("Database connection closed.")
             except (Exception, psycopg2.DatabaseError) as error:
                 print(error)
+
+
+class MongoHelpers:
+
+    @staticmethod
+    def get_list_of_script_files():
+        list_of_files = sorted(os.listdir(const.MONGO_CSV_FILES))
+        return list_of_files

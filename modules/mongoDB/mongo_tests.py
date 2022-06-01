@@ -1,8 +1,9 @@
 import time
-from db_constants import *
 
-from pymongo import MongoClient
 import pymongo
+from pymongo import MongoClient
+
+from db_constants import *
 
 DATABASE_NAME = "Formula1DB"
 CONNECTION_STRING = "mongodb://mongo_db_host:27017"

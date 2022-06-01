@@ -1,7 +1,8 @@
+import time
+
 import psycopg2
 
 from db_constants import *
-import time
 
 
 def get_connection_to_database():
@@ -50,10 +51,10 @@ def select_all_data_from_columns(cursor):
 def select_races_data(cursor):
     start_time = time.time()
     query = f'SELECT * from {TABLES_NAMES["RESULTS"]}' \
-    f' inner join {TABLES_NAMES["RACES"]} r on r."{RACES_COLUMNS["RACE_ID"]}" = {TABLES_NAMES["RESULTS"]}."{RESULTS_COLUMNS["RACE_ID"]}"' \
-    f' inner join {TABLES_NAMES["DRIVERS"]} d on d."{DRIVER_COLUMNS["DRIVER_ID"]}" = {TABLES_NAMES["RESULTS"]}."{RESULTS_COLUMNS["DRIVER_ID"]}"' \
-    f' inner join {TABLES_NAMES["CONSTRUCTORS"]} c on c."{CONSTRUCTORS_COLUMNS["CONSTRUCTOR_ID"]}" = {TABLES_NAMES["RESULTS"]}."{RESULTS_COLUMNS["CONSTRUCTOR_ID"]}"' \
-    f' inner join {TABLES_NAMES["STATUS"]} s on s."{STATUS_COLUMNS["STATUS_ID"]}" = {TABLES_NAMES["RESULTS"]}."{RESULTS_COLUMNS["STATUS_ID"]}"'
+            f' inner join {TABLES_NAMES["RACES"]} r on r."{RACES_COLUMNS["RACE_ID"]}" = {TABLES_NAMES["RESULTS"]}."{RESULTS_COLUMNS["RACE_ID"]}"' \
+            f' inner join {TABLES_NAMES["DRIVERS"]} d on d."{DRIVER_COLUMNS["DRIVER_ID"]}" = {TABLES_NAMES["RESULTS"]}."{RESULTS_COLUMNS["DRIVER_ID"]}"' \
+            f' inner join {TABLES_NAMES["CONSTRUCTORS"]} c on c."{CONSTRUCTORS_COLUMNS["CONSTRUCTOR_ID"]}" = {TABLES_NAMES["RESULTS"]}."{RESULTS_COLUMNS["CONSTRUCTOR_ID"]}"' \
+            f' inner join {TABLES_NAMES["STATUS"]} s on s."{STATUS_COLUMNS["STATUS_ID"]}" = {TABLES_NAMES["RESULTS"]}."{RESULTS_COLUMNS["STATUS_ID"]}"'
 
     cursor.execute(query)
     end_time = time.time()
@@ -99,5 +100,3 @@ if __name__ == '__main__':
     select_longest_lap(cursor)
 
     select_driver_with_most_1st_positions(cursor)
-
-

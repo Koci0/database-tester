@@ -1,10 +1,8 @@
-from time import sleep, time
-import pandas as pd
-import json
-
-from pymongo import MongoClient
-import pymongo
 import os
+from time import sleep, time
+
+import pandas as pd
+from pymongo import MongoClient
 
 CSV_FILE_DIR = "tables_csv/"
 DATABASE_NAME = "Formula1DB"
@@ -22,7 +20,7 @@ def initialize_database():
     database = client[DATABASE_NAME]
     csv_files = get_list_of_script_files()
     for file in csv_files:
-        df = pd.read_csv(CSV_FILE_DIR+file, sep=';')
+        df = pd.read_csv(CSV_FILE_DIR + file, sep=';')
         data = df.to_dict('records')
         collectionName = database[file.replace(".csv", "")]
         start_time = time()

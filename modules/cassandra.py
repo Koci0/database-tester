@@ -118,35 +118,35 @@ class Cassandra(DatabaseContainer):
             if stdout:
                 print(f"Table from file {file} added.")
 
-    def select_all_data_from_columns(self, stdout=True) -> List:
+    def select_all_data_from_columns(self, stdout=False) -> List:
         """Select All Data from Columns By Column Name"""
         results = []
         for key, value in db_const.TABLES_NAMES.items():
             if key == "JOINED":
                 continue
-            start_time = time.time()
+            start_time = time.perf_counter()
             query = f'SELECT * from {value}'
             self.session.execute(query)
-            elapsed_time = time.time() - start_time
+            elapsed_time = time.perf_counter() - start_time
             if stdout:
                 print(f"time to select all rows from column {key}: {elapsed_time}s")
             results.append(("SELECT ALL DATA FROM COLUMNS", key, elapsed_time))
         return results
 
-    def select_races_data(self, stdout=True) -> List:
+    def select_races_data(self, stdout=False) -> List:
         """Select All Data from Races Table"""
-        start_time = time.time()
+        start_time = time.perf_counter()
         query = f'SELECT * from {db_const.TABLES_NAMES["JOINED"]}'
 
         self.session.execute(query)
-        elapsed_time = time.time() - start_time
+        elapsed_time = time.perf_counter() - start_time
         if stdout:
             print(f"All data from {db_const.TABLES_NAMES['RESULTS']} with related columns, time: {elapsed_time}s")
         return ["SELECT RACES DATA", "-", elapsed_time]
 
     def select_longest_lap(self, stdout=False) -> List:
         """Select Longest Lap from laptimes table"""
-        start_time = time.time()
+        start_time = time.perf_counter()
         query = f'SELECT MAX({db_const.LAPTIMES_COLUMNS["MILLISECONDS"]}) from {db_const.TABLES_NAMES["LAPTIMES"]}'
         result = self.session.execute(query).one()
         if not result:
@@ -154,20 +154,20 @@ class Cassandra(DatabaseContainer):
         max_milliseconds = self.session.execute(query).one()[0]
         query = f'SELECT * FROM {db_const.TABLES_NAMES["LAPTIMES"]} WHERE milliseconds = {max_milliseconds} ALLOW FILTERING'
         self.session.execute(query)
-        elapsed_time = time.time() - start_time
+        elapsed_time = time.perf_counter() - start_time
         if stdout:
             print(f"Select longest lap time, time: {elapsed_time}s")
         return ["SELECT LONGEST LAP", "-", elapsed_time]
 
     def select_driver_with_most_1st_positions(self, stdout=False) -> List:
         """Select Driver with the most 1st positions"""
-        start_time = time.time()
+        start_time = time.perf_counter()
         query = f'SELECT "driverId" FROM {db_const.TABLES_NAMES["QUALIFYING"]} WHERE position = 1 GROUP BY "driverId" ALLOW FILTERING'
         result = self.session.execute(query).all()
         driverId_list = ",".join([str(driverId[0]) for driverId in result]).strip(",")
         query = f'SELECT * FROM {db_const.TABLES_NAMES["DRIVERS"]} WHERE "driverId" in ({driverId_list})'
         self.session.execute(query)
-        elapsed_time = time.time() - start_time
+        elapsed_time = time.perf_counter() - start_time
         if stdout:
             print(f"Select driver with most 1st positions, time: {elapsed_time}s")
         return ["SELECT DRIVER WITH MOST 1st POSITIONS", "-", elapsed_time]
