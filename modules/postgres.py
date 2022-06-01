@@ -120,6 +120,17 @@ class Postgres(DatabaseContainer):
                 f' inner join {db_const.TABLES_NAMES["STATUS"]} s on s."{db_const.STATUS_COLUMNS["STATUS_ID"]}" = {db_const.TABLES_NAMES["RESULTS"]}."{db_const.RESULTS_COLUMNS["STATUS_ID"]}"'
 
         self.db_cursor.execute(query)
+        result = list(self.db_cursor.fetchall())
+        try:
+            with open("JOINED", "w") as file:
+                for line in result:
+                    s_list = [str(word) for word in line]
+                    s = ";".join(s_list)
+                    file.write(s)
+                    file.write("\n")
+        except Exception as e:
+            print(e)
+            pass
         elapsed_time = time.time() - start_time
         if stdout:
             print(f"All data from {db_const.TABLES_NAMES['RESULTS']} with related columns, time: {elapsed_time}s")

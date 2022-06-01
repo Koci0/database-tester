@@ -105,8 +105,8 @@ RESULTS_COLUMNS = {"RESULT_ID": "resultId",
                    "STATUS_ID": "statusId"}
 
 TABLES_NAMES = {"DRIVER_STANDINGS": "driver_standings",
-                "LAPTIMES": "laptimes",
-                "PITSTOPS": "pitstops",
+                "LAPTIMES": "lap_times",
+                "PITSTOPS": "pit_stops",
                 "RACES": "races",
                 "DRIVERS": "drivers",
                 "QUALIFYING": "qualifying",
@@ -116,4 +116,5 @@ TABLES_NAMES = {"DRIVER_STANDINGS": "driver_standings",
                 "STATUS": "status",
                 "CONSTRUCTORS": "constructors",
                 "CONSTRUCTOR_STANDINGS": "constructor_standings",
-                "CONSTRUCTOR_RESULTS": "constructor_results"}
+                "CONSTRUCTOR_RESULTS": "constructor_results",
+                "JOINED": "joined"}
