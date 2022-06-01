@@ -1,2 +1,5 @@
 docker
 pandas
+psycopg2-binary
+tabulate
+cassandra-driver
