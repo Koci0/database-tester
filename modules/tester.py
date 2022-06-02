@@ -138,6 +138,7 @@ class Tester:
         self.results["Mongo"].append(self._mongo.select_driver_with_most_1st_positions())
 
     def _stop_mongo(self):
+        self._mongo.db_client.close()
         self._mongo.stop_all_containers()
         self._mongo.cleanup()
         self._mongo = None

@@ -60,10 +60,6 @@ class Mongo(DatabaseContainer):
             self.stop_container(container)
         self.containers.clear()
 
-    def cleanup(self) -> None:
-        self.db_client.close()
-        super().cleanup()
-
     def execute_query(self, sql, stdout=True) -> int:
         cmd = f"mongosh --eval '{sql}'"
         exit_code, output = self.master_container.exec_run(cmd, privileged=True)
