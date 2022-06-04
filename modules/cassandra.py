@@ -91,13 +91,15 @@ class Cassandra(DatabaseContainer):
             return True
         return False
 
-    def initialize_database(self, stdout=False):
+    def initialize_database(self, stdout=False) -> List:
         self.execute_query(
             sql="\"create keyspace f1_data with replication = {'class': 'org.apache.cassandra.locator.SimpleStrategy', 'replication_factor': '1'};\"",
             stdout=False)
         cluster = Cluster([self.get_fresh_attrs(self.master_container)['NetworkSettings']['IPAddress']])
         self.session = cluster.connect(const.CASSANDRA_KEYSPACE)
         sql_files = CassandraHelpers.get_list_of_script_files()
+        results = []
+        start_time = time.perf_counter()
         for file in sql_files:
             if stdout:
                 print(f"Running queries from file {file}...")
@@ -111,12 +113,14 @@ class Cassandra(DatabaseContainer):
                         if stdout:
                             print(to_execute)
                         self.session.execute(to_execute)
-
             except cassandra.DriverException as e:
                 print(f"Error: {e}")
 
             if stdout:
                 print(f"Table from file {file} added.")
+        elapsed_time = time.perf_counter() - start_time
+        results.append(("INSERT", "-", elapsed_time))
+        return results
 
     def select_all_data_from_columns(self, stdout=False) -> List:
         """Select All Data from Columns By Column Name"""

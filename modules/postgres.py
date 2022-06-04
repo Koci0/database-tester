@@ -78,10 +78,12 @@ class Postgres(DatabaseContainer):
             return True
         return False
 
-    def initialize_database(self, stdout=False):
+    def initialize_database(self, stdout=False) -> List:
+        results = []
         self.db_connection = PostgresHelpers.get_connection_to_database()
         self.db_cursor = PostgresHelpers.get_db_cursor(self.db_connection)
         sql_files = PostgresHelpers.get_list_of_script_files()
+        start_time = time.perf_counter()
         for file in sql_files:
             if stdout:
                 print(f"Running queries from file {file}...")
@@ -96,6 +98,9 @@ class Postgres(DatabaseContainer):
             self.db_connection.commit()
             if stdout:
                 print(f"Table from file {file} added.")
+        elapsed_time = time.perf_counter() - start_time
+        results.append(("INSERT", "-", elapsed_time))
+        return results
 
     def select_all_data_from_columns(self, stdout=False) -> List:
         """Select All Data from Columns By Column Name"""
@@ -123,16 +128,6 @@ class Postgres(DatabaseContainer):
 
         self.db_cursor.execute(query)
         result = list(self.db_cursor.fetchall())
-        try:
-            with open("JOINED", "w") as file:
-                for line in result:
-                    s_list = [str(word) for word in line]
-                    s = ";".join(s_list)
-                    file.write(s)
-                    file.write("\n")
-        except Exception as e:
-            print(e)
-            pass
         elapsed_time = time.perf_counter() - start_time
         if stdout:
             print(f"All data from {db_const.TABLES_NAMES['RESULTS']} with related columns, time: {elapsed_time}s")

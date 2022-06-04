@@ -38,7 +38,7 @@ class Tester:
             print("> Cassandra has started.")
 
             print("> Initializing Cassandra...")
-            self._cassandra.initialize_database()
+            self.results["Cassandra"].extend(self._cassandra.initialize_database())
             print("> Cassandra has initialized.")
 
             if not automatic:
@@ -78,7 +78,7 @@ class Tester:
             print("> Postgres has started.")
 
             print("> Initializing Postgres...")
-            self._postgres.initialize_database()
+            self.results["Postgres"].extend(self._postgres.initialize_database())
             print("> Postgres has initialized.")
 
             if not automatic:
@@ -114,7 +114,7 @@ class Tester:
             print("> Mongo has started.")
 
             print("> Initializing Mongo...")
-            self._mongo.initialize_database()
+            self.results["Mongo"].extend(self._mongo.initialize_database())
             print("> Mongo has initialized.")
 
             if not automatic:

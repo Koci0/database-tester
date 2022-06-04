@@ -89,16 +89,19 @@ class Mongo(DatabaseContainer):
                                      password=const.MONGO_PASSWORD)
         self.database = self.db_client[const.MONGO_DATABASE]
         csv_files = MongoHelpers.get_list_of_script_files()
+        results = []
+        start_time = time.perf_counter()
         for file in csv_files:
             df = pd.read_csv(os.path.join(const.MONGO_CSV_FILES, file), sep=';')
             data = df.to_dict('records')
             collection_name = self.database[file.replace(".csv", "")]
-            start_time = time.perf_counter()
             collection_name.insert_many(data)
-            end_time = time.perf_counter()
-            result_time = end_time - start_time
             if stdout:
-                print(f"Time to insert data into collection {collection_name.name} = {result_time}")
+                print(f"Inserted collection {collection_name.name}")
+        end_time = time.perf_counter()
+        result_time = end_time - start_time
+        results.append(("INSERT", "-", result_time))
+        return results
 
     def select_all_data_from_columns(self, stdout=False) -> List:
         """Select All Data from Columns By Column Name"""
