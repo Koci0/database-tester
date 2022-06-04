@@ -7,7 +7,7 @@ create table status
 );
 
 alter table status
-    owner to postgres;
+    owner to root;
 
 INSERT INTO public.status ("statusId", status) VALUES (1, 'Finished');
 INSERT INTO public.status ("statusId", status) VALUES (2, 'Disqualified');

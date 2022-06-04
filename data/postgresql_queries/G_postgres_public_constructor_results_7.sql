@@ -16,7 +16,7 @@ create table constructor_results
 );
 
 alter table constructor_results
-    owner to postgres;
+    owner to root;
 
 INSERT INTO public.constructor_results ("constructorResultsId", "raceId", "constructorId", points, status) VALUES (1, 18, 1, 14, 'NULL');
 INSERT INTO public.constructor_results ("constructorResultsId", "raceId", "constructorId", points, status) VALUES (2, 18, 2, 8, 'NULL');

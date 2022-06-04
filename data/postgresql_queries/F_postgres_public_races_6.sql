@@ -19,7 +19,7 @@ create table races
 );
 
 alter table races
-    owner to postgres;
+    owner to root;
 
 INSERT INTO public.races ("raceId", year, round, "circuitId", name, date, time, url) VALUES (1, 2009, 1, 1, 'Australian Grand Prix', '29.03.2009', '06:00:00', 'http://en.wikipedia.org/wiki/2009_Australian_Grand_Prix');
 INSERT INTO public.races ("raceId", year, round, "circuitId", name, date, time, url) VALUES (2, 2009, 2, 2, 'Malaysian Grand Prix', '05.04.2009', '09:00:00', 'http://en.wikipedia.org/wiki/2009_Malaysian_Grand_Prix');

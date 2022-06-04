@@ -14,7 +14,7 @@ create table drivers
 );
 
 alter table drivers
-    owner to postgres;
+    owner to root;
 
 create unique index drivers_driverid_uindex
     on drivers ("driverId");

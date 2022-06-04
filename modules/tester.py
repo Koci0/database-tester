@@ -26,8 +26,8 @@ class Tester:
         # print(f"\n{const.SEPARATOR}\n", end="")
         self.run_postgres(automatic)
         print(f"\n{const.SEPARATOR}\n", end="")
-        # self.run_mongo(automatic)
-        # print(f"\n{const.SEPARATOR}\n", end="")
+        self.run_mongo(automatic)
+        print(f"\n{const.SEPARATOR}\n", end="")
         self._print_results()
 
     def run_cassandra(self, automatic):
@@ -138,6 +138,8 @@ class Tester:
         self.results["Mongo"].append(self._mongo.select_races_data())
         self.results["Mongo"].append(self._mongo.select_longest_lap())
         self.results["Mongo"].append(self._mongo.select_driver_with_most_1st_positions())
+        self.results["Mongo"].append(self._mongo.update_laptimes())
+        self.results["Mongo"].append(self._mongo.remove_results())
 
     def _stop_mongo(self):
         self._mongo.db_client.close()

@@ -16,7 +16,7 @@ create table pitstops
 );
 
 alter table pitstops
-    owner to postgres;
+    owner to root;
 
 INSERT INTO public.pitstops ("raceId", "driverId", stop, lap, time, duration, milliseconds) VALUES (841, 153, 1, 1, '17:05:23', 26.898, 26898);
 INSERT INTO public.pitstops ("raceId", "driverId", stop, lap, time, duration, milliseconds) VALUES (841, 30, 1, 1, '17:05:52', 25.021, 25021);

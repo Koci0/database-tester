@@ -23,7 +23,7 @@ create table qualifying
 );
 
 alter table qualifying
-    owner to postgres;
+    owner to root;
 
 create unique index qualifying_qualifyid_uindex
     on qualifying ("qualifyId");

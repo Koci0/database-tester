@@ -18,7 +18,7 @@ create table constructor_standings
 );
 
 alter table constructor_standings
-    owner to postgres;
+    owner to root;
 
 INSERT INTO public.constructor_standings ("constructorStandingsId", "raceId", "constructorId", points, position, "positionText", wins) VALUES (1, 18, 1, 14, 1, 1, 1);
 INSERT INTO public.constructor_standings ("constructorStandingsId", "raceId", "constructorId", points, position, "positionText", wins) VALUES (2, 18, 2, 8, 3, 3, 0);
