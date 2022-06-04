@@ -5,13 +5,16 @@ create table qualifying
             primary key,
     "raceId"        integer
         constraint qualifying_races_raceid_fk
-            references races,
+            references races
+            on update cascade on delete cascade,
     "driverId"      integer
         constraint qualifying_drivers_driverid_fk
-            references drivers,
+            references drivers
+            on update cascade on delete cascade,
     "constructorId" integer
         constraint qualifying_constructors_constructorid_fk
-            references constructors,
+            references constructors
+            on update cascade on delete cascade,
     number          integer,
     position        integer,
     q1              text,

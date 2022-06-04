@@ -5,10 +5,12 @@ create table constructor_standings
             primary key,
     "raceId"                 integer
         constraint constructor_standings_races_raceid_fk
-            references races,
+            references races
+            on update cascade on delete cascade,
     "constructorId"          integer
         constraint constructor_standings_constructors_constructorid_fk
-            references constructors,
+            references constructors
+            on update cascade on delete cascade,
     points                   integer,
     position                 integer,
     "positionText"           integer,

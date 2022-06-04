@@ -5,7 +5,8 @@ create table constructor_results
             primary key,
     "raceId"               integer
         constraint constructor_results_races_raceid_fk
-            references races,
+            references races
+            on update cascade on delete cascade,
     "constructorId"        integer
         constraint constructor_results_constructors_constructorid_fk
             references constructors

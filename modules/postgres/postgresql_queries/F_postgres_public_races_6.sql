@@ -5,11 +5,13 @@ create table races
             primary key,
     year        integer
         constraint races_seasons_year_fk
-            references seasons,
+            references seasons
+            on update cascade on delete cascade,
     round       integer,
     "circuitId" integer
         constraint races_circuits_circuitid_fk
-            references circuits,
+            references circuits
+            on update cascade on delete cascade,
     name        text,
     date        text,
     time        text,

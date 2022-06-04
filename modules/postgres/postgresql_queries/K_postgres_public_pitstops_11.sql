@@ -2,10 +2,12 @@ create table pitstops
 (
     "raceId"     integer
         constraint pitstops_races_raceid_fk
-            references races,
+            references races
+            on update cascade on delete cascade,
     "driverId"   integer
         constraint pitstops_drivers_driverid_fk
-            references drivers,
+            references drivers
+            on update cascade on delete cascade,
     stop         integer,
     lap          integer,
     time         text,

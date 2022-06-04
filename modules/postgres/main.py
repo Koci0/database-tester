@@ -86,6 +86,32 @@ def select_driver_with_most_1st_positions(cursor):
     print(f"Select driver with most 1st positions, Time: {result_time}")
 
 
+# Remove Results of Drivers that got position lower than 30 more than 10 times ~7k rows affected
+def remove_results(cursor):
+    start_time = time.time()
+    query = 'DELETE FROM results where "driverId" IN ' \
+            '(SELECT "driverId" as driver FROM ' \
+            '(SELECT DISTINCT "driverId" FROM qualifying WHERE position < 30 GROUP BY "driverId" having count(*) > 5 ) ' \
+            'as newTab)'
+    cursor.execute(query)
+    end_time = time.time()
+    result_time = end_time - start_time
+    print(f"Remove results. Time: {result_time}")
+
+
+# Update lap times for races where drivers where disqualified 
+def update_laptimes(cursor):
+    start_time = time.time()
+    query = "UPDATE laptimes SET position=100, milliseconds = milliseconds + 10000000, " \
+            "time = (concat((milliseconds/ (1000*60)) % 60, ':', (milliseconds/1000) % 60,'.', (milliseconds % 1000))) " \
+            "WHERE 'driverId' IN (SELECT 'driverId' as driver FROM (SELECT 'driverId' FROM RESULTS WHERE position is Null OR 'positionText' = 'R') as NewTab) " \
+            "AND 'raceId' IN (Select 'raceId' as race FROM (SELECT 'raceId' FROM RESULTS WHERE position is Null OR 'positionText' = 'R') as NewTab)"
+    cursor.execute(query)
+    end_time = time.time()
+    result_time = end_time - start_time
+    print(f"Update laptimes of disqualified drivers. Time: {result_time}")
+
+
 if __name__ == '__main__':
     time.sleep(120)
     connection = get_connection_to_database()
@@ -98,5 +124,9 @@ if __name__ == '__main__':
     select_longest_lap(cursor)
 
     select_driver_with_most_1st_positions(cursor)
+
+    update_laptimes(cursor)
+
+    remove_results(cursor)
 
 
