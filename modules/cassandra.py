@@ -171,3 +171,9 @@ class Cassandra(DatabaseContainer):
         if stdout:
             print(f"Select driver with most 1st positions, time: {elapsed_time}s")
         return ["SELECT DRIVER WITH MOST 1st POSITIONS", "-", elapsed_time]
+
+    def remove_results(self, stdout=False) -> List:
+        pass
+
+    def update_laptimes(self, stdout=False) -> List:
+        pass

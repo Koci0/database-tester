@@ -5,7 +5,8 @@ create table constructor_results
             primary key,
     "raceId"               integer
         constraint constructor_results_races_raceid_fk
-            references races,
+            references races
+            on update cascade on delete cascade,
     "constructorId"        integer
         constraint constructor_results_constructors_constructorid_fk
             references constructors
@@ -15,7 +16,7 @@ create table constructor_results
 );
 
 alter table constructor_results
-    owner to root;
+    owner to postgres;
 
 INSERT INTO public.constructor_results ("constructorResultsId", "raceId", "constructorId", points, status) VALUES (1, 18, 1, 14, 'NULL');
 INSERT INTO public.constructor_results ("constructorResultsId", "raceId", "constructorId", points, status) VALUES (2, 18, 2, 8, 'NULL');

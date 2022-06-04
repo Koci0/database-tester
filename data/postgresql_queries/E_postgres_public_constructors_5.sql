@@ -10,7 +10,7 @@ create table constructors
 );
 
 alter table constructors
-    owner to root;
+    owner to postgres;
 
 create unique index constructors_constructorid_uindex
     on constructors ("constructorId");

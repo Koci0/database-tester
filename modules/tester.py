@@ -22,12 +22,12 @@ class Tester:
         }
 
     def run(self, automatic):
-        self.run_cassandra(automatic)
-        print(f"\n{const.SEPARATOR}\n", end="")
+        # self.run_cassandra(automatic)
+        # print(f"\n{const.SEPARATOR}\n", end="")
         self.run_postgres(automatic)
         print(f"\n{const.SEPARATOR}\n", end="")
-        self.run_mongo(automatic)
-        print(f"\n{const.SEPARATOR}\n", end="")
+        # self.run_mongo(automatic)
+        # print(f"\n{const.SEPARATOR}\n", end="")
         self._print_results()
 
     def run_cassandra(self, automatic):
@@ -100,6 +100,8 @@ class Tester:
         self.results["Postgres"].append(self._postgres.select_races_data())
         self.results["Postgres"].append(self._postgres.select_longest_lap())
         self.results["Postgres"].append(self._postgres.select_driver_with_most_1st_positions())
+        self.results["Postgres"].append(self._postgres.update_laptimes())
+        self.results["Postgres"].append(self._postgres.remove_results())
 
     def _stop_postgres(self):
         self._postgres.stop_all_containers()

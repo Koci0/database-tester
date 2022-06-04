@@ -5,11 +5,13 @@ create table races
             primary key,
     year        integer
         constraint races_seasons_year_fk
-            references seasons,
+            references seasons
+            on update cascade on delete cascade,
     round       integer,
     "circuitId" integer
         constraint races_circuits_circuitid_fk
-            references circuits,
+            references circuits
+            on update cascade on delete cascade,
     name        text,
     date        text,
     time        text,
@@ -17,7 +19,7 @@ create table races
 );
 
 alter table races
-    owner to root;
+    owner to postgres;
 
 INSERT INTO public.races ("raceId", year, round, "circuitId", name, date, time, url) VALUES (1, 2009, 1, 1, 'Australian Grand Prix', '29.03.2009', '06:00:00', 'http://en.wikipedia.org/wiki/2009_Australian_Grand_Prix');
 INSERT INTO public.races ("raceId", year, round, "circuitId", name, date, time, url) VALUES (2, 2009, 2, 2, 'Malaysian Grand Prix', '05.04.2009', '09:00:00', 'http://en.wikipedia.org/wiki/2009_Malaysian_Grand_Prix');

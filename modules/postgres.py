@@ -113,7 +113,7 @@ class Postgres(DatabaseContainer):
         return results
 
     def select_races_data(self, stdout=False) -> List:
-        """Select All Data from Races Table"""
+        """Select All Data from Results Table"""
         start_time = time.perf_counter()
         query = f'SELECT * from {db_const.TABLES_NAMES["RESULTS"]}' \
                 f' inner join {db_const.TABLES_NAMES["RACES"]} r on r."{db_const.RACES_COLUMNS["RACE_ID"]}" = {db_const.TABLES_NAMES["RESULTS"]}."{db_const.RESULTS_COLUMNS["RACE_ID"]}"' \
@@ -136,7 +136,7 @@ class Postgres(DatabaseContainer):
         elapsed_time = time.perf_counter() - start_time
         if stdout:
             print(f"All data from {db_const.TABLES_NAMES['RESULTS']} with related columns, time: {elapsed_time}s")
-        return ["SELECT RACES DATA", "-", elapsed_time]
+        return ["SELECT RSULTS DATA", "-", elapsed_time]
 
     def select_longest_lap(self, stdout=False) -> List:
         """Select Longest Lap from laptimes table"""
@@ -163,3 +163,32 @@ class Postgres(DatabaseContainer):
         if stdout:
             print(f"Select driver with most 1st positions, time: {elapsed_time}s")
         return ["SELECT DRIVER WITH MOST 1st POSITIONS", "-", elapsed_time]
+
+    def remove_results(self, stdout=False) -> List:
+        """Remove Results of Drivers that got position lower than 30 more than 10 times ~7k rows affected"""
+        start_time = time.perf_counter()
+        query = 'DELETE FROM results where "driverId" IN ' \
+                '(SELECT "driverId" as driver FROM ' \
+                '(SELECT DISTINCT "driverId" FROM qualifying WHERE position < 30 GROUP BY "driverId" having count(*) > 5 ) ' \
+                'as newTab)'
+        self.db_cursor.execute(query)
+        self.db_connection.commit()
+        elapsed_time = time.perf_counter() - start_time
+        if stdout:
+            print(f"Removing results, time: {elapsed_time}s")
+        return ["REMOVE RESULTS FOR SPECIFIC DRIVERS", "-", elapsed_time]
+
+    def update_laptimes(self, stdout=False) -> List:
+        """Update lap times for races where drivers where disqualified """
+        start_time = time.perf_counter()
+        query = "UPDATE laptimes SET position=100, milliseconds = (milliseconds + 10000000), time= '" + "updated time" + \
+                "' WHERE 'driverId' IN (SELECT 'driverId' as driver FROM " \
+                "(SELECT 'driverId' FROM RESULTS WHERE position is Null OR 'positionText' = 'R') as NewTab) " \
+                "OR 'raceId' IN (Select 'raceId' as race FROM " \
+                "(SELECT 'raceId' FROM RESULTS WHERE position is Null OR 'positionText' = 'R') as NewTab)"
+        self.db_cursor.execute(query)
+        self.db_connection.commit()
+        elapsed_time = time.perf_counter() - start_time
+        if stdout:
+            print(f"Update laptimes of disqualified drivers, time: {elapsed_time}s")
+        return ["UPDATE LAPTIMES OF DISQUALIFIED DRIVERS", "-", elapsed_time]

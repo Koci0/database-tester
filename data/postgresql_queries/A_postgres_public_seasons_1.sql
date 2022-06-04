@@ -7,7 +7,7 @@ create table seasons
 );
 
 alter table seasons
-    owner to root;
+    owner to postgres;
 
 INSERT INTO public.seasons (year, url) VALUES (2009, 'http://en.wikipedia.org/wiki/2009_Formula_One_season');
 INSERT INTO public.seasons (year, url) VALUES (2008, 'http://en.wikipedia.org/wiki/2008_Formula_One_season');

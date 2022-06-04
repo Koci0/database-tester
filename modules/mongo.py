@@ -158,3 +158,75 @@ class Mongo(DatabaseContainer):
         if stdout:
             print(f"Select driver with most 1st positions, time: {elapsed_time}s")
         return ["SELECT DRIVER WITH MOST 1st POSITIONS", "-", elapsed_time]
+
+    def remove_results(self, stdout=False) -> List:
+        """Remove Results of Drivers that got position lower than 30 more than 10 times ~7k rows affected"""
+        query = [
+            {
+                '$match': {'position': {'$lt': 30}}
+            },
+            {
+                '$group':
+                    {
+                        '_id': '$driverId',
+                        'count': {'$sum': 1}
+                    }
+            },
+            {
+                '$match': {'count': {'$gt': 5}}
+            },
+            {
+                '$group':
+                    {
+                        '_id': "$_id"
+                    }
+            }
+        ]
+        start_time = time.perf_counter()
+        ids = list(self.database.qualifying.aggregate(query))
+        elapsed_time = time.perf_counter() - start_time
+
+        drivers_ids = [d["_id"] for d in ids]
+
+        start_time = time.perf_counter()
+        self.database.results.delete_many({'driverId': {'$in': drivers_ids}})
+        elapsed_time += time.perf_counter() - start_time
+        if stdout:
+            print(f"Removing results, time: {elapsed_time}s")
+        return ["REMOVE RESULTS FOR SPECIFIC DRIVERS", "-", elapsed_time]
+
+    def update_laptimes(self, stdout=False) -> List:
+        """Update lap times for races where drivers where disqualified """
+        query = [
+            {'$match':
+                {
+                    '$or': [{'position': 'null'}, {'positionText': 'R'}]
+                }
+            },
+            {'$project':
+                {
+                    '_id': 'false',
+                    'driverId': '$driverId',
+                    'raceId': '$raceId'
+                }
+            }
+        ]
+        start_time = time.perf_counter()
+        results = list(self.database.results.aggregate(query))
+        elapsed_time = time.perf_counter() - start_time
+        driverIds = [d["driverId"] for d in results]
+        raceIds = [d["raceId"] for d in results]
+        myquery = {'$or': [{'driverId': {'$in': driverIds}}, {'raceId': {'$in': raceIds}}]}
+        update_query = {
+            '$inc': {'milliseconds': 10000000},
+            '$set': {
+                'position': 100,
+                'time': 'UPDATED COLUMN'
+            },
+        }
+        start_time = time.perf_counter()
+        self.database.laptimes.update_many(myquery, update_query)
+        elapsed_time += (time.perf_counter() - start_time)
+        if stdout:
+            print(f"Update laptimes of disqualified drivers, time: {elapsed_time}s")
+        return ["UPDATE LAPTIMES OF DISQUALIFIED DRIVERS", "-", elapsed_time]

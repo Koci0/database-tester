@@ -14,7 +14,7 @@ create table circuits
 );
 
 alter table circuits
-    owner to root;
+    owner to postgres;
 
 INSERT INTO public.circuits ("circuitId", "circuitRef", name, location, country, lat, lng, alt, url) VALUES (1, 'albert_park', 'Albert Park Grand Prix Circuit', 'Melbourne', 'Australia', -37.8497, 144.968, 10, 'http://en.wikipedia.org/wiki/Melbourne_Grand_Prix_Circuit');
 INSERT INTO public.circuits ("circuitId", "circuitRef", name, location, country, lat, lng, alt, url) VALUES (2, 'sepang', 'Sepang International Circuit', 'Kuala Lumpur', 'Malaysia', 2.76083, 101.738, null, 'http://en.wikipedia.org/wiki/Sepang_International_Circuit');
