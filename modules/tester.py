@@ -22,8 +22,8 @@ class Tester:
         }
 
     def run(self, automatic):
-        self.run_cassandra(automatic)
-        print(f"\n{const.SEPARATOR}\n", end="")
+        # self.run_cassandra(automatic)
+        # print(f"\n{const.SEPARATOR}\n", end="")
         self.run_postgres(automatic)
         print(f"\n{const.SEPARATOR}\n", end="")
         self.run_mongo(automatic)
@@ -100,6 +100,8 @@ class Tester:
         self.results["Postgres"].append(self._postgres.select_races_data())
         self.results["Postgres"].append(self._postgres.select_longest_lap())
         self.results["Postgres"].append(self._postgres.select_driver_with_most_1st_positions())
+        self.results["Postgres"].append(self._postgres.update_laptimes())
+        self.results["Postgres"].append(self._postgres.remove_results())
 
     def _stop_postgres(self):
         self._postgres.stop_all_containers()
@@ -136,8 +138,11 @@ class Tester:
         self.results["Mongo"].append(self._mongo.select_races_data())
         self.results["Mongo"].append(self._mongo.select_longest_lap())
         self.results["Mongo"].append(self._mongo.select_driver_with_most_1st_positions())
+        self.results["Mongo"].append(self._mongo.update_laptimes())
+        self.results["Mongo"].append(self._mongo.remove_results())
 
     def _stop_mongo(self):
+        self._mongo.db_client.close()
         self._mongo.stop_all_containers()
         self._mongo.cleanup()
         self._mongo = None
