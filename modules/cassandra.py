@@ -177,7 +177,34 @@ class Cassandra(DatabaseContainer):
         return ["SELECT DRIVER WITH MOST 1st POSITIONS", "-", elapsed_time]
 
     def remove_results(self, stdout=False) -> List:
-        pass
+        """Remove Results of Drivers that got position lower than 30 more than 10 times ~7k rows affected"""
+        start_time = time.perf_counter()
+        query = 'SELECT "driverId" FROM qualifying WHERE position < 30 GROUP BY "driverId" ALLOW FILTERING'
+        result = self.session.execute(query)
+        driverId_list = ",".join([str(driverId[0]) for driverId in set(result)]).strip(",")
+        result = self.session.execute(query)
+        # Cassandra does not support IN for non-key fields
+        self.session.execute(query)
+        resultId_list = ",".join([str(resultId[0]) for resultId in set(result)]).strip(",")
+        query = f'DELETE FROM results WHERE "resultId" IN ({resultId_list})'
+        self.session.execute(query)
+        elapsed_time = time.perf_counter() - start_time
+        if stdout:
+            print(f"Removing results, time: {elapsed_time}s")
+        return ["REMOVE RESULTS FOR SPECIFIC DRIVERS", "-", elapsed_time]
 
     def update_laptimes(self, stdout=False) -> List:
-        pass
+        """Update lap times for races where drivers where disqualified """
+        start_time = time.perf_counter()
+        query = "SELECT \"raceId\" FROM RESULTS WHERE \"positionText\" = 'R' ALLOW FILTERING"
+        result = self.session.execute(query)
+        raceId_list = ",".join([str(raceId[0]) for raceId in result]).strip(",")
+        # Cassandra does not support IN for non-key fields
+        result = self.session.execute(query)
+        driverId_list = ",".join([str(driverId[0]) for driverId in result]).strip(",")
+        query = f"UPDATE drivers SET number=100, nationality = 'None' WHERE \"driverId\" IN ({driverId_list})"
+        self.session.execute(query)
+        elapsed_time = time.perf_counter() - start_time
+        if stdout:
+            print(f"Update laptimes of disqualified drivers, time: {elapsed_time}s")
+        return ["UPDATE LAPTIMES OF DISQUALIFIED DRIVERS", "-", elapsed_time]
